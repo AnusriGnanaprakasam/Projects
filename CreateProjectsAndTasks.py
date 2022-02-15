@@ -1,5 +1,6 @@
 import os
 import json
+import argparse
 
 class Topic:
     def __init__(self, name):
@@ -88,7 +89,11 @@ def Create_topics_projects_tasks(typeof):
             os.chdir("C:/DEV/Projects/Tasks")
             makejsonfile(objname,obj)
 # obj.__setattr__("name","Beem")use this instead to change attributes
+"""cli"""
+make = argparse.ArgumentParser(description="to make project,task,topic, etc.")
+make.add_argument("type",metavar="type",type=str,help="enter your type")
+args = make.parse_args()
 
-if __name__ == "__main__":
-   # typeofobject = input("What do you want to make: ")
-    Create_topics_projects_tasks("Tasks")#make cli command to do this
+type = args.type
+Create_topics_projects_tasks(type)
+
