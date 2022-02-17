@@ -1,9 +1,9 @@
 #make delete function that deletes takes the type of thing to be deleted(task,topic,etc.) and
 import os
 import argparse
-from CreateProjectsAndTasks import Create_topics_projects_tasks
 
-def mylife(type,todel):
+
+def delproject(type,todel):
    try:
       os.chdir(f"C:/DEV/Projects/{type}")
       f = open(f"Store{todel}.json",'r+')
@@ -31,5 +31,5 @@ args = delete.parse_args()
 
 type = args.type
 todel = args.todel
-mylife(type,todel)
+delproject(type,todel)
 
