@@ -50,7 +50,7 @@ def makejsonfile(objname,obj):
     with open(f"Store{objname}.json", "w+") as file:
         file.write('\n')
         json.dump(obj, file, cls=ObjectEncoder)
-
+#change to if name = main thing
 def Create_topics_projects_tasks(typeof):
     if typeof == "Topic":
         objname = input("Enter name: ")
