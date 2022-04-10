@@ -1,9 +1,8 @@
 import os
 import json
 import typer
-import calendar
-from datetime import date
 from shutil import rmtree 
+from datetime import date
 
 app = typer.Typer()
 today = date.today()
@@ -133,32 +132,9 @@ def CreateProject():
     print(ListofTopics)
     TopicUnder = input("What topic is this project under? ").strip(" ")
     os.chdir(""f"C:/DEV/Projects/Topics/{TopicUnder}""")
-    os.makedirs(f"{project_name}/Months")
+    os.mkdir(f"{project_name}")
     os.chdir(f"C:/DEV/Projects/Topics/{TopicUnder}/{project_name}")
-    os.chdir(f"C:/DEV/Projects/Topics/{TopicUnder}/{project_name}/Months")
-    # get current year to see if leap year
-    leapYearStatus = calendar.isleap(today.year)
-    feb = 30 if leapYearStatus == True else 29
-    monthswith31days = [1, 3, 5, 7, 8, 10, 12]
-    monthswith30days = [4, 6, 9, 11]
     # to determine subproject switches may have to happen between months sometimes
-    for i in range(1, 13):
-        os.mkdir(str(i))
-        os.chdir(f"C:/DEV/Projects/Topics/{TopicUnder}/{project_name}/Months/{i}")
-        if i in monthswith31days:  # check if leap year for feb
-            for e in range(1, 32):
-                os.mkdir(str(e))
-        os.chdir(f"C:/DEV/Projects/Topics/{TopicUnder}/{project_name}/Months")
-        if i in monthswith30days:
-            os.chdir(f"C:/DEV/Projects/Topics/{TopicUnder}/{project_name}/Months/{i}")
-            for e in range(1, 31):
-                os.mkdir(str(e))
-        os.chdir(f"C:/DEV/Projects/Topics/{TopicUnder}/{project_name}/Months")
-        if i == 2:
-            os.chdir(f"C:/DEV/Projects/Topics/{TopicUnder}/{project_name}/Months/{i}")
-            for e in range(1, feb):
-                os.mkdir(str(e))
-        os.chdir(f"C:/DEV/Projects/Topics/{TopicUnder}/{project_name}/Months")
     # make text file that contains info about project
     os.chdir(""f"C:/DEV/Projects/Topics/{TopicUnder}/{project_name}""")
     with open(f"{project_name} Description", "a+") as project_description:
@@ -175,7 +151,7 @@ def CreatesubProject():
 def CreateTask():
     objname = input("Enter name of Task: ")
     month_number = today.month #maybe change this later...
-    day_number = int(input('What day should this task be done on'))
+    day_number = int(input('What day should this task be done on(please give number)'))
     start_date = input("Start time: ") #what time you should start it 
     end_date = input("End time: ")#due date
     topic_under = input("What topic is this task under")
@@ -184,11 +160,11 @@ def CreateTask():
     if  is_there_subproject_under == 'y':
         subproject_under = input("what subproject is it under: ")
         obj = Tasks(objname,start_date, end_date,topic_under, project_under,month_number,day_number, subproject_under)
-        os.chdir(f"C:/DEV/Projects/Topics/{topic_under}/{project_under}/Months/{month_number}/{day_number}")
+        os.chdir(f"C:/DEV/Projects/Topics/Calendar/Months/{month_number}/{day_number}")
         makejsonfile(objname, obj)
     else:
         obj = Tasks(objname,start_date, end_date,topic_under, project_under,month_number,day_number)
-        os.chdir(f"C:/DEV/Projects/Topics/{topic_under}/{project_under}/Months/{month_number}/{day_number}")
+        os.chdir(f"C:/DEV/Projects/Topics/Calendar/Months/{month_number}/{day_number}")
         makejsonfile(objname, obj)
 
 # obj.__setattr__("name","Beem")use this instead to change attributes
