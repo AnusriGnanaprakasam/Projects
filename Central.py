@@ -9,7 +9,24 @@ startdir = "C:/DEV/Projects/Topics"
 today = date.today()
 app = typer.Typer()
 
-''' I may be removing this function after but i just want to show how it would be like to set everything up in a directory'''
+#make a startup overview function that gives an overview at a certain time of what tasks in what proj and subproj need to be done
+
+@app.command()
+def LookAtProjects():
+    pass
+@app.command()
+def LookAtsubProjects():
+    project,topic = input("What Project and Topic do you want to look at(project,topic)?" ).split(",")
+    location = f"C:\DEV\Projects\Topics\{topic}\{project}"
+    os.chdir(location)
+    allfileindir = os.listdir(location)
+    allfileindir = list(filter(lambda x:(".json" in x),allfileindir))
+    print(allfileindir)
+    subproject = input("What subproject do you want to look at? ")
+    for i in os.listdir(f"C:\DEV\Projects\Topics\{topic}\{project}"):
+        if i == "Store"+subproject+".json":
+            subproject = "Store"+subproject+".json"
+            LookAtAttr(subproject)
 
 @app.command()
 def LookAtTasks():
@@ -20,7 +37,9 @@ def LookAtTasks():
         print(os.listdir(f'C:\DEV\Projects\Topics\Calendar\Months\{month}\{day}'))
         get_attr = input("Would you like to get details on the task?(y/n) ")
         if get_attr.strip(" ") == "y":
-            LookAtTaskAttr()
+            Taskname = input("What task would you like to look at")
+            Taskname = "Store"+Taskname+".json"
+            LookAtAttr(Taskname)
         
     if fortoday == "n":
         lookdaymonth = input("From what day and month?(format: \"d m\") ").split(" ")
@@ -29,13 +48,13 @@ def LookAtTasks():
         print(os.listdir(f'C:\DEV\Projects\Topics\Calendar\Months\{month}\{day}'))
         get_attr = input("Would you like to get details on the task?(y/n) ")
         if get_attr.strip(" ") == "y":
-            LookAtTaskAttr()
+            Taskname = input("What task would you like to look at")
+            Taskname = "Store"+Taskname+".json"
+            LookAtAttr(Taskname)
         
-def LookAtTaskAttr():
-    Taskname = input("What task would you like to look at")
-    Taskname = "Store"+Taskname+".json"
-    with open(f"{Taskname}",'r+') as taskfile:
-        attr = json.load(taskfile)
+def LookAtAttr(objname):
+    with open(f"{objname}",'r+') as objfile:
+        attr = json.load(objfile)
         print(attr)
 
 @app.command()

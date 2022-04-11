@@ -1,6 +1,8 @@
 import typer
 import os 
 import calendar
+from datetime import date
+today = date.today()
 startdir = "C:/DEV/Projects/Topics"
 app = typer.Typer()
 
