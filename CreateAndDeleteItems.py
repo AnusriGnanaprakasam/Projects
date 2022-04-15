@@ -1,10 +1,8 @@
 import os
 import json
-import typer
 from shutil import rmtree 
 from datetime import *
 
-app = typer.Typer()
 today = date.today()
 
 class subProjects():
@@ -132,7 +130,7 @@ def CreateProject():
     Project_attr.update({"to complete by": to_complete_by, "time to complete": time_to_complete}) #replace with end date and start date
     os.chdir("C:/DEV/Projects/Topics")
     ListofTopics = os.listdir("C:/DEV/Projects/Topics")
-    print(ListofTopics)
+    print(filter(lambda x: x != "Calendar",ListofTopics))
     TopicUnder = input("What topic is this project under? ").strip(" ")
     os.chdir(""f"C:/DEV/Projects/Topics/{TopicUnder}""")
     os.mkdir(f"{project_name}")
