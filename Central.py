@@ -1,3 +1,4 @@
+from contextlib import redirect_stderr
 import os
 import pathlib
 import json
@@ -23,10 +24,9 @@ print(welcome_message)
 
 @app.command()
 def startwork():
-    tree = Tree(Tree(f":open_file_folder: [link file://{startdir}]{startdir}",guide_style="bold bright_blue",))
-    walk_directory(pathlib.Path(startdir), tree)
-    print(tree)
-    #make it print tree function with rich from the module
+    StartTree()
+        
+    #display subproject and duration information about them text to the task name
 @app.command()
 def New():
     CreateAndDeleteItems.CreateNew()
@@ -87,39 +87,36 @@ def LookAtAttr(objname):
         with open(f"{objname}",'r+') as objfile:
             print(objfile.read())
 
-def walk_directory(directory: pathlib.Path, tree: Tree) -> None:
-    """Recursively build a Tree with directory contents. cred: https://github.com/Textualize/rich""" 
-    # Sort dirs first then by filename
-    paths = sorted(
-        pathlib.Path(directory).iterdir(),
-        key=lambda path: (path.is_file(), path.name.lower()),
-    )
-    for path in paths:
-        # Remove hidden files
-        if path.name.startswith("1"):
-           break
-        if path.name.startswith("2"):
-           break
-        if path.name.startswith("3"):
-           break
-        if path.is_dir():
-            style = "dim" if path.name.startswith("__") else ""
-            branch = tree.add(
-                f"[bold magenta]:open_file_folder: [link file://{path}]{escape(path.name)}",
-                style=style,
-                guide_style=style,
-            )
-            walk_directory(path, branch)
-        else:
-            text_filename = Text(path.name, "green")
-            text_filename.highlight_regex(r"\..*$", "bold red")
-            text_filename.stylize(f"link file://{path}")
-            file_size = path.stat().st_size
-            text_filename.append(f" ({decimal(file_size)})", "blue")
-            icon = "🐍 " if path.suffix == ".py" else "📄 "
-            tree.add(Text(icon) + text_filename)
+def StartTree():
+    '''Create Tree upon starting'''
+    os.chdir("C:/DEV/Projects/Topics")
+    ListofTopics = [i for i in os.listdir("C:/DEV/Projects/Topics") if i != "Calendar"]
+    for topic in ListofTopics:
+        os.chdir(f"C:/DEV/Projects/Topics/{topic}")
+        Topic = Tree(f"[yellow]{topic}")
+        for project in os.listdir(f"C:/DEV/Projects/Topics/{topic}"):
+            Project = Topic.add(f"[red]{project}")
+            #read tasks to return what proj they are in
+            os.chdir(f"C:\DEV\Projects\Topics\Calendar\Months\{today.month}\{11}")
+            tasks = os.listdir(f"C:\DEV\Projects\Topics\Calendar\Months\{today.month}\{str(11)}")
+            for task in tasks:
+                taskfile = open(task)
+                attrs = json.load(taskfile)
+                attrs = attrs[0]
+                if attrs["project_under"] == str(project):
+                    duration = attrs["duration"]
+                    if int(duration[1]) in range(0,10):
+                        duration[1] = f"0{duration[1]}"
+                        duration = f"{duration[0]}:{duration[1]}:00"
+                        subproject = attrs["subproject_under"]
+                        if attrs["subproject_under"] != "none":  
+                            Task = Project.add(f"{task} {duration} {subproject}")
+                        else:
+                            Task = Project.add(f"{task} {duration}")               
+    print(Topic)
+               
 
-
+        
 #look at tasks for today  -one command
 #make new task - another command
 
