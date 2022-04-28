@@ -1,6 +1,4 @@
-from contextlib import redirect_stderr
 import os
-import pathlib
 import json
 from datetime import date
 import typer
@@ -8,9 +6,6 @@ import CreateAndDeleteItems
 from pyfiglet import figlet_format
 from rich.tree import Tree
 from rich import print
-from rich.filesize import decimal
-from rich.markup import escape
-from rich.text import Text
 
 
 startdir = "C:/DEV/Projects/Topics"
@@ -25,8 +20,12 @@ print(welcome_message)
 @app.command()
 def startwork():
     StartTree()
-        
-    #display subproject and duration information about them text to the task name
+    u = input("What task would you like to look at?(with store and json label)")
+    u = "Store"+u+".json"
+    #need to change the directory 
+    attr = LookAtAttr(u)
+    print(attr)
+
 @app.command()
 def New():
     CreateAndDeleteItems.CreateNew()
@@ -53,7 +52,7 @@ def LookAtsubProjects(): #make it so that they can be changed
     for i in os.listdir(f"C:\DEV\Projects\Topics\{topic}\{project}"):
         if i == "Store"+subproject+".json":
             subproject = "Store"+subproject+".json"
-            LookAtAttr(subproject)
+            print(LookAtAttr(subproject))
 @app.command()
 def LookAtTasks():#make it so that attrs can be changed
     fortoday = input("For today(y/n)? ").strip(" ")
@@ -82,7 +81,7 @@ def LookAtAttr(objname):
     if ".json" in objname:
         with open(f"{objname}",'r+') as objfile:
             attr = json.load(objfile)
-            print(attr)
+            return attr
     else:
         with open(f"{objname}",'r+') as objfile:
             print(objfile.read())
@@ -115,8 +114,6 @@ def StartTree():
                             Task = Project.add(f"{task} {duration}")               
     print(Topic)
                
-
-        
 #look at tasks for today  -one command
 #make new task - another command
 
