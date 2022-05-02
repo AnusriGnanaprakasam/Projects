@@ -1,3 +1,4 @@
+from argparse import _AttributeHolder
 import os
 import json
 from datetime import date
@@ -6,6 +7,9 @@ import CreateAndDeleteItems
 from pyfiglet import figlet_format
 from rich.tree import Tree
 from rich import print
+from timer import countdown
+
+from eventchecker import RunAndPause
 
 
 startdir = "C:/DEV/Projects/Topics"
@@ -18,14 +22,21 @@ display_possible_commands= figlet_format("Projects: list of commands in a tree")
 print(welcome_message)
 
 @app.command()
-def startwork():
-    StartTree()
-    u = input("What task would you like to look at?(with store and json label)")
-    u = "Store"+u+".json"
-    #need to change the directory 
-    attr = LookAtAttr(u)
-    print(attr)
-
+def startworkfortoday():
+    StartTree()#there is a month dependency
+    task = input("What task would you like to start?(with store and json label)")
+    task = "Store"+task+".json"
+    day = 11#######
+    os.chdir(f'C:\DEV\Projects\Topics\Calendar\Months\{str(4)}\{day}')
+    attr = LookAtAttr(task)
+    if type(attr) == 'list':
+        attr = attr[0]
+    if len(attr['duration']) == 2:
+        hour,minutes = attr['duration']
+        countdown(task,hour,minutes)
+    else:
+        hour,minutes,seconds = attr['duration']
+        countdown(task,hour,minutes,seconds)
 @app.command()
 def New():
     CreateAndDeleteItems.CreateNew()
@@ -85,6 +96,11 @@ def LookAtAttr(objname):
     else:
         with open(f"{objname}",'r+') as objfile:
             print(objfile.read())
+def ChangeAttr(objname,hour,min):
+    if ".json" in objname:
+        with open(f"{objname}",'r+') as objfile:
+            attr = json.load(objfile)
+            attr["duaration"] = [hour,min]
 
 def StartTree():
     '''Create Tree upon starting'''
@@ -96,8 +112,8 @@ def StartTree():
         for project in os.listdir(f"C:/DEV/Projects/Topics/{topic}"):
             Project = Topic.add(f"[red]{project}")
             #read tasks to return what proj they are in
-            os.chdir(f"C:\DEV\Projects\Topics\Calendar\Months\{today.month}\{11}")
-            tasks = os.listdir(f"C:\DEV\Projects\Topics\Calendar\Months\{today.month}\{str(11)}")
+            os.chdir(f"C:\DEV\Projects\Topics\Calendar\Months\{str(5)}\{11}")#today.month
+            tasks = os.listdir(f"C:\DEV\Projects\Topics\Calendar\Months\{str(5)}\{str(11)}")#today.month
             for task in tasks:
                 taskfile = open(task)
                 attrs = json.load(taskfile)
