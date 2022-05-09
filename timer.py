@@ -4,11 +4,10 @@ import json
 
 def countdown(task,hour,min,sec = 59):
     '''prints amount of time in console and updates every second'''
-    #one min more than the actual value is always added
     print("press control -c to stop timer")
     try:
         for hr in range(int(hour),-1,-1):
-            for minutes in range(int(min), -1, -1):
+            for minutes in range(int(min)-1, -1, -1):
                 for seconds in range(int(sec),0,-1):
                     if seconds in range(-1,10):
                         seconds = "0"+ str(seconds)
@@ -28,7 +27,6 @@ def ChangeAttr(objname,hr,minutes,seconds):
     if ".json" in objname:
         with open(f"{objname}",'r+') as objfile:
             attr = json.load(objfile)
-            #attr = attr[0] #need to change 
             if str(0) in str(minutes):
                 minutes = minutes[1]
             if str(0) in str(seconds):

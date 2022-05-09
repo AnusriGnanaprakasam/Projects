@@ -21,13 +21,12 @@ print(welcome_message)
 @app.command()
 def startworkfortoday():
     StartTree()
-    task = input("What task would you like to start?(with store and json label)")
+    task = input("What task would you like to start?(without store and json label)")
     task = "Store"+task+".json"
     os.chdir(f'C:\DEV\Projects\Topics\Calendar\Months\{today.month}\{today.day}')
     attr = LookAtAttr(task)
-    #attr = attr[0]#how json stores info need to change
     
-    if len([i for i in attr['duration']]) == 2: #problem due to that
+    if len(attr['duration']) == 2: #problem due to that
         hour,minutes = attr['duration']
         countdown(task,hour,minutes)
     else:
@@ -113,7 +112,6 @@ def StartTree():
             for task in tasks:
                 taskfile = open(task)
                 attrs = json.load(taskfile)
-                #attrs = attrs[0]
                 if attrs["project_under"] == str(project):
                     duration = attrs["duration"]
                     if int(duration[1]) in range(0,10):

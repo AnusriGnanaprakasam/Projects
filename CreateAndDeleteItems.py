@@ -96,9 +96,9 @@ class ObjectEncoder(json.JSONEncoder):
 
     def default(self, obj):
         if isinstance(obj,subProjects ):
-            return [obj.__dict__]
+            return obj.__dict__
         if isinstance(obj,Tasks):
-            return[obj.__dict__]
+            return obj.__dict__
         return json.JSONEncoder.default(self, obj)
 
 
