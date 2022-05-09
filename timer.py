@@ -28,6 +28,7 @@ def ChangeAttr(objname,hr,minutes,seconds):
     if ".json" in objname:
         with open(f"{objname}",'r+') as objfile:
             attr = json.load(objfile)
+            #attr = attr[0] #need to change 
             if str(0) in str(minutes):
                 minutes = minutes[1]
             if str(0) in str(seconds):

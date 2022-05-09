@@ -1,4 +1,4 @@
-from argparse import _AttributeHolder
+
 import os
 import json
 from datetime import date
@@ -8,9 +8,6 @@ from pyfiglet import figlet_format
 from rich.tree import Tree
 from rich import print
 from timer import countdown
-
-from eventchecker import RunAndPause
-
 
 startdir = "C:/DEV/Projects/Topics"
 today = date.today()
@@ -23,19 +20,18 @@ print(welcome_message)
 
 @app.command()
 def startworkfortoday():
-    StartTree()#there is a month dependency
+    StartTree()
     task = input("What task would you like to start?(with store and json label)")
     task = "Store"+task+".json"
-    day = 11#######
-    os.chdir(f'C:\DEV\Projects\Topics\Calendar\Months\{str(4)}\{day}')
+    os.chdir(f'C:\DEV\Projects\Topics\Calendar\Months\{today.month}\{today.day}')
     attr = LookAtAttr(task)
-    if type(attr) == 'list':
-        attr = attr[0]
-    if len(attr['duration']) == 2:
+    #attr = attr[0]#how json stores info need to change
+    
+    if len([i for i in attr['duration']]) == 2: #problem due to that
         hour,minutes = attr['duration']
         countdown(task,hour,minutes)
     else:
-        hour,minutes,seconds = attr['duration']
+        hour,minutes,seconds =  attr['duration']
         countdown(task,hour,minutes,seconds)
 @app.command()
 def New():
@@ -112,12 +108,12 @@ def StartTree():
         for project in os.listdir(f"C:/DEV/Projects/Topics/{topic}"):
             Project = Topic.add(f"[red]{project}")
             #read tasks to return what proj they are in
-            os.chdir(f"C:\DEV\Projects\Topics\Calendar\Months\{str(5)}\{11}")#today.month
-            tasks = os.listdir(f"C:\DEV\Projects\Topics\Calendar\Months\{str(5)}\{str(11)}")#today.month
+            os.chdir(f"C:\DEV\Projects\Topics\Calendar\Months\{today.month}\{today.day}")
+            tasks = os.listdir(f"C:\DEV\Projects\Topics\Calendar\Months\{today.month}\{today.day}")
             for task in tasks:
                 taskfile = open(task)
                 attrs = json.load(taskfile)
-                attrs = attrs[0]
+                #attrs = attrs[0]
                 if attrs["project_under"] == str(project):
                     duration = attrs["duration"]
                     if int(duration[1]) in range(0,10):
