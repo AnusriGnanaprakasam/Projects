@@ -19,17 +19,20 @@ display_possible_commands= figlet_format("Projects: list of commands in a tree")
 print(welcome_message)
 
 @app.command()
-def startworkfortoday():
+def startwork():
     StartTree()
     task = input("What task would you like to start?(without store and json label)")
     task = "Store"+task+".json"
     os.chdir(f'C:\DEV\Projects\Topics\Calendar\Months\{today.month}\{today.day}')
     attr = LookAtAttr(task)
     
+    if len(attr['duration']) == 1:
+        hour = attr['duration'][0]
+        countdown(task,hour)
     if len(attr['duration']) == 2: #problem due to that
         hour,minutes = attr['duration']
         countdown(task,hour,minutes)
-    else:
+    if len(attr['duration'])== 3:
         hour,minutes,seconds =  attr['duration']
         countdown(task,hour,minutes,seconds)
 @app.command()
@@ -115,18 +118,22 @@ def StartTree():
             os.chdir(f"C:\DEV\Projects\Topics\Calendar\Months\{today.month}\{today.day}")
             tasks = os.listdir(f"C:\DEV\Projects\Topics\Calendar\Months\{today.month}\{today.day}")
             for task in tasks:
-                taskfile = open(task)
+                taskfile = open(task) #was open before
                 attrs = json.load(taskfile)
                 if attrs["project_under"] == str(project):
                     duration = attrs["duration"]
+                    if len(duration) == 1:
+                        duration.append(0)
                     if int(duration[1]) in range(0,10):
                         duration[1] = f"0{duration[1]}"
                         duration = f"{duration[0]}:{duration[1]}:00"
                         subproject = attrs["subproject_under"]
-                        if attrs["subproject_under"] != "none":  
-                            Task = Project.add(f"{task} {duration} {subproject}")
-                        else:
-                            Task = Project.add(f"{task} {duration}")               
+                    else:
+                        duration = f"{duration[0]}:{duration[1]}:00"
+                    if attrs["subproject_under"] != "none":  
+                        task = Project.add(f"{task} {duration} {subproject}")#changing from "Task" to "task" somehow worked??
+                    else:
+                        task = Project.add(f"{task} {duration}")               
     print(Topic)
                
 #look at tasks for today  -one command

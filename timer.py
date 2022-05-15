@@ -2,13 +2,17 @@ import time
 import sys
 import json
 
-def countdown(task,hour,min,sec = 59):
+def countdown(task,hour,min=59,sec = 59):
     '''prints amount of time in console and updates every second'''
     print("press control -c to stop timer")
+    if min == 59:
+       hour -= 1
+    if sec == 59 and min != 59:
+       min -= 1
     try:
         for hr in range(int(hour),-1,-1):
             for minutes in range(int(min), -1, -1):
-                for seconds in range(int(sec),-1,-1): #seconds flip between two and one(never reaching zero)
+                for seconds in range(int(sec),-1,-1): #works but extra 59 seconds everytime
                     if seconds in range(-1,10):
                         seconds = "0"+ str(seconds)
                     if minutes in range(-1,10):
