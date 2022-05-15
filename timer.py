@@ -7,8 +7,8 @@ def countdown(task,hour,min,sec = 59):
     print("press control -c to stop timer")
     try:
         for hr in range(int(hour),-1,-1):
-            for minutes in range(int(min)-1, -1, -1):
-                for seconds in range(int(sec),0,-1):
+            for minutes in range(int(min), -1, -1):
+                for seconds in range(int(sec),-1,-1): #seconds flip between two and one(never reaching zero)
                     if seconds in range(-1,10):
                         seconds = "0"+ str(seconds)
                     if minutes in range(-1,10):
@@ -17,11 +17,12 @@ def countdown(task,hour,min,sec = 59):
                     sys.stdout.write(f"{hr}:{minutes}:{seconds} ")
                     sys.stdout.flush()
                     time.sleep(1)
+                sec = 59
             min = 59
         sys.stdout.write("\rComplete!  \n")
     except KeyboardInterrupt:
         ChangeAttr(task,hr,minutes,seconds)
-        print("Pause. type start command again")
+        print("Paused. type start command again")
 
 def ChangeAttr(objname,hr,minutes,seconds):
     if ".json" in objname:

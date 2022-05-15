@@ -1,6 +1,5 @@
 import os
 import json
-from shutil import rmtree 
 from datetime import *
 
 today = date.today()
@@ -35,59 +34,52 @@ class Tasks():
 
 
 def delproject(type,todel):
-   try:
-      if type == "Topic":
-         os.chdir(f"C:/DEV/Projects/Topics/{todel}")
-         warning = input("Warning this will delete all project,subprojects and tasks within the directory. \n Type \"confirm\" to continue").strip(" ")
-         if warning != "confirm":
-            exit()
-         confirmation = input("Type confirm?(y/n) ").strip(" ")
-         if confirmation == "n":
-            exit()
-         if confirmation == 'y':
+    #cannot delete topics because of win 5 error
+    try:
+        if type == "Topic":
+            os.chdir(f"C:/DEV/Projects/Topics/{todel}")
+            warning = input("Warning this will delete all project,subprojects and tasks within the directory. \n Type \"confirm\" to continue").strip(" ")
+            if warning != "confirm":
+                exit()
+            confirmation = input("Type confirm?(y/n) ").strip(" ")
+            if confirmation == "n":
+                exit()
+            if confirmation == 'y':
+                os.chdir("C:/DEV/Projects/Topics")
+            os.removedirs(f"C:/DEV/Projects/Topics/{todel}")
+        if type == "Projects":
             os.chdir("C:/DEV/Projects/Topics")
-            rmtree(f"C:/DEV/Projects/Topics/{todel}")
-      if type == "Projects":
-         os.chdir("C:/DEV/Projects/Topics")
-         for topic in os.listdir():
-            os.chdir(f"C:/DEV/Projects/Topics/{topic}")
+            for topic in os.listdir():
+                os.chdir(f"C:/DEV/Projects/Topics/{topic}")
             for project in os.listdir():
                 if project == todel:
-                  delpath = os.getcwd()
-         os.chdir(delpath)
-         rmtree(f"{delpath}/{todel}")
-      if type == "subProject":
-         os.chdir("C:/DEV/Projects/Topics")
-         for topic in os.listdir():
-            os.chdir(f"C:/DEV/Projects/Topics/{topic}")
+                    os.removedirs(f"C:/DEV/Projects/Topics/{topic}/{project}")
+        if type == "subProject":
+            os.chdir("C:/DEV/Projects/Topics")
+            for topic in os.listdir():
+                os.chdir(f"C:/DEV/Projects/Topics/{topic}")
             for project in os.listdir():
-               os.chdir(f"C:/DEV/Projects/Topics/{topic}/{project}")
-               for subproject in os.listdir():
-                  if todel in subproject:
-                     todel = subproject
-                     delpath = os.getcwd()
-         os.chdir(delpath)
-         os.remove(f"{delpath}\\{todel}")
-      if type == "Task":
-         os.chdir("C:/DEV/Projects/Topics")
-         for topic in os.listdir():
-            os.chdir(f"C:/DEV/Projects/Topics/{topic}")
-            for project in os.listdir():
-               os.chdir(f"C:/DEV/Projects/Topics/{topic}/{project}/Months")
-               for month in os.listdir():
-                  os.chdir(f"C:/DEV/Projects/Topics/{topic}/{project}/Months/{month}")
-                  for day in os.listdir():
-                     os.chdir(f"C:/DEV/Projects/Topics/{topic}/{project}/Months/{month}/{day}")
-                     for task in os.listdir():
+                os.chdir(f"C:/DEV/Projects/Topics/{topic}/{project}")
+                for subproject in os.listdir():
+                    if todel in subproject:
+                        os.remove(f"C:/DEV/Projects/Topics/{topic}/{project}/{subproject}")
+        if type == "Task" or "task":#testing purposes
+            os.chdir("C:/DEV/Projects/Topics/Calendar/Months")
+            for month in os.listdir("C:/DEV/Projects/Topics/Calendar/Months"):
+                os.chdir(f"C:/DEV/Projects/Topics/Calendar/Months/{month}")
+                for day in os.listdir(f"C:/DEV/Projects/Topics/Calendar/Months/{month}"):
+                    os.chdir(f"C:/DEV/Projects/Topics/Calendar/Months/{month}/{day}")
+                    tasklist = os.listdir(f"C:/DEV/Projects/Topics/Calendar/Months/{month}/{day}")             
+                    delpath = os.getcwd()
+                    for task in tasklist:
                         if todel in task:
-                           todel = task
-                           delpath = os.getcwd()
-         os.chdir(delpath)
-         os.remove(f"{delpath}\\{todel}")
-   except (FileNotFoundError,UnboundLocalError) :
-      print(f"There is no {type} under the name \"{todel}\"")
-   finally:
-      print("Make?")
+                            os.remove(f"C:/DEV/Projects/Topics/Calendar/Months/{month}/{day}/{task}")
+
+    except(FileNotFoundError,UnboundLocalError) as e:
+        print(e)
+        print(f"There is no {type} under the name \"{todel}\"")
+    finally:
+        print("Make?")
       
     
 
