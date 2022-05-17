@@ -9,6 +9,8 @@ from rich.tree import Tree
 from rich import print
 from timer import countdown
 
+
+'''do maintance upon running (like rebuild calendar if new year) '''
 startdir = "C:/DEV/Projects/Topics"
 today = date.today()
 app = typer.Typer()
@@ -20,7 +22,7 @@ print(welcome_message)
 
 @app.command()
 def startwork():
-    StartTree()
+    StartTree() 
     task = input("What task would you like to start?(without store and json label)")
     task = "Store"+task+".json"
     os.chdir(f'C:\DEV\Projects\Topics\Calendar\Months\{today.month}\{today.day}')
@@ -40,9 +42,9 @@ def new():
     CreateAndDeleteItems.CreateNew()
 @app.command()
 def delete():
-    u = input('Deltype and what to delete?').split(" ")
+    u = input('Deltype and what to delete?(separate by comma)').split(",")
     deltype,todel = u
-    CreateAndDeleteItems.delproject(deltype,todel)
+    CreateAndDeleteItems.delete(deltype,todel)
 @app.command()
 def LookAtProjects():#make it so that attrs can be changed
     topic = input("What Topic do you want to look at?" )
@@ -99,7 +101,7 @@ def LookAtAttr(objname):
     else:
         with open(f"{objname}",'r+') as objfile:
             print(objfile.read())
-def ChangeAttr(objname,hour,min):
+def ChangeAttr(objname,hour,min): #maybe look at resolving this and the one from the timer file
     if ".json" in objname:
         with open(f"{objname}",'r+') as objfile:
             attr = json.load(objfile)

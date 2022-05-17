@@ -1,9 +1,11 @@
 import time
 import sys
 import json
-
+import CreateAndDeleteItems
+'''times hours spent on certain tasks and can be paused. Also should delete tasks that have been finished.'''
 def countdown(task,hour,min=59,sec = 59):
-    '''prints amount of time in console and updates every second'''
+    '''prints amount of time left 
+    and updates every second'''
     print("press control -c to stop timer")
     if min == 59:
        hour -= 1
@@ -12,7 +14,7 @@ def countdown(task,hour,min=59,sec = 59):
     try:
         for hr in range(int(hour),-1,-1):
             for minutes in range(int(min), -1, -1):
-                for seconds in range(int(sec),-1,-1): #works but extra 59 seconds everytime
+                for seconds in range(int(sec),-1,-1): #works but -1 seconds everytime
                     if seconds in range(-1,10):
                         seconds = "0"+ str(seconds)
                     if minutes in range(-1,10):
@@ -20,15 +22,16 @@ def countdown(task,hour,min=59,sec = 59):
                     sys.stdout.write("\r")
                     sys.stdout.write(f"{hr}:{minutes}:{seconds} ")
                     sys.stdout.flush()
-                    time.sleep(1)
+                    time.sleep(1) #for now
                 sec = 59
             min = 59
-        sys.stdout.write("\rComplete!  \n")
+        sys.stdout.write("\r:)\n")
     except KeyboardInterrupt:
-        ChangeAttr(task,hr,minutes,seconds)
+        Pause(task,hr,minutes,seconds)
         print("Paused. type start command again")
-
-def ChangeAttr(objname,hr,minutes,seconds):
+    CreateAndDeleteItems.delete("Task",task)
+def Pause(objname,hr,minutes,seconds):
+    '''lets the timer start from where it left off by modifying json attribute: duration'''
     if ".json" in objname:
         with open(f"{objname}",'r+') as objfile:
             attr = json.load(objfile)
