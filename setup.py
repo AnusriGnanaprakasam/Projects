@@ -1,40 +1,27 @@
-import typer
-import os 
-import calendar
-from datetime import date
-today = date.today()
-startdir = "C:/DEV/Projects/Topics"
-app = typer.Typer()
+from setuptools import setup, find_packages
 
-
-@app.command()
-def BuildCalendar():
-    #makes calendar folder which will have tasks populated into it
-    os.chdir(startdir)
-    os.makedirs("Calendar/Months")
-    leapYearStatus = calendar.isleap(today.year)
-    feb = 30 if leapYearStatus == True else 29
-    monthswith31days = [1, 3, 5, 7, 8, 10, 12]
-    monthswith30days = [4, 6, 9, 11]
-    """build the calendar"""
-    for i in range(1, 13):
-        os.chdir(f"{startdir}/Calendar/Months")
-        os.mkdir(str(i))
-        os.chdir(f"{startdir}/Calendar/Months/{i}")
-        if i in monthswith31days:  # check if leap year for feb
-            for e in range(1, 32):
-                os.mkdir(str(e))
-        os.chdir(f"{startdir}/Calendar/Months")
-        if i in monthswith30days:
-            os.chdir(f"{startdir}/Calendar/Months/{i}")
-            for e in range(1, 31):
-                os.mkdir(str(e))
-        os.chdir(f"{startdir}/Calendar/Months")
-        if i == 2:
-            os.chdir(f"{startdir}/Calendar/Months/{i}")
-            for e in range(1, feb):
-                os.mkdir(str(e))
-        os.chdir(f"{startdir}/Calendar/Months")
-
-if __name__ == '__main__':
-    app()
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
+with open("requirements.txt", "r", encoding="utf-8") as fh:
+    requirements = fh.read()
+setup(
+    name = 'Projects',
+    version = '0.0.1',
+    author = 'ADG',
+    author_email = 'do this later',
+    license = '<the license you chose>',
+    description = 'organize your stuff',
+    long_description = long_description,
+    long_description_content_type = "text/markdown",
+    url = 'https://github.com/AnusriGnanaprakasam/Projects',
+    include_package_data=True,
+    py_modules = ['projects,cli'],
+    packages = ["projects"],
+    install_requires = [requirements],
+    python_requires='>=3.7',
+    classifiers=[
+        "Programming Language :: Python :: 3.8",
+        "Operating System :: Windows ",
+    ],
+    #entry_points = {'console_scripts':['projects=projects.:function']}#no need apparently
+)
