@@ -2,8 +2,10 @@ import os
 import json
 from datetime import *
 from shutil import rmtree
+from main import find_config
 
 today = date.today()
+startdir = find_config()
 
 class subProjects():
     def __init__(self,objname,topic_under,project_under,start_date,end_date):
@@ -37,40 +39,40 @@ class Tasks():
 def delete(type,todel):#make it so that spaces can be taken
     try:
         if type == "topic":
-            os.chdir(f"C:/DEV/Projects/Topics/{todel}")
+            os.chdir(f"{startdir}/Topics/{todel}")
             warning = input("Warning this will delete all project,subprojects and tasks within the directory. \n Type \"confirm\" to continue ").strip(" ")
             if warning != "confirm":
                 exit()
             else:
-                os.chdir("C:/DEV/Projects/Topics")
-                os.removedirs(f"C:/DEV/Projects/Topics/{todel}")
+                os.chdir(f"{startdir}/Topics")
+                os.removedirs(f"{startdir}/Topics/{todel}")
         if type == "project":
-            os.chdir("C:/DEV/Projects/Topics")
+            os.chdir(f"{startdir}/Topics")
             for topic in os.listdir():
-                os.chdir(f"C:/DEV/Projects/Topics/{topic}")
+                os.chdir(f"{startdir}/Topics/{topic}")
             for project in os.listdir():
                 if project == todel:
-                    rmtree(f"C:/DEV/Projects/Topics/{topic}/{todel}")
+                    rmtree(f"{startdir}/Topics/{topic}/{todel}")
         if type == "subproject": 
-            os.chdir("C:/DEV/Projects/Topics")
+            os.chdir(f"{startdir}/Topics")
             for topic in os.listdir():
-                os.chdir(f"C:/DEV/Projects/Topics/{topic}")
+                os.chdir(f"{startdir}/Topics/{topic}")
             for project in os.listdir():
-                os.chdir(f"C:/DEV/Projects/Topics/{topic}/{project}")
+                os.chdir(f"{startdir}/Topics/{topic}/{project}")
                 for subproject in os.listdir():
                     if todel in subproject:
-                        os.remove(f"C:/DEV/Projects/Topics/{topic}/{project}/{subproject}")
+                        os.remove(f"{startdir}/Topics/{topic}/{project}/{subproject}")
         if type ==  "task":
-            os.chdir("C:/DEV/Projects/Topics/Calendar/Months")
-            for month in os.listdir("C:/DEV/Projects/Topics/Calendar/Months"):
-                os.chdir(f"C:/DEV/Projects/Topics/Calendar/Months/{month}")
-                for day in os.listdir(f"C:/DEV/Projects/Topics/Calendar/Months/{month}"):
-                    os.chdir(f"C:/DEV/Projects/Topics/Calendar/Months/{month}/{day}")
-                    tasklist = os.listdir(f"C:/DEV/Projects/Topics/Calendar/Months/{month}/{day}")             
+            os.chdir(f"{startdir}/Topics/Calendar/Months")
+            for month in os.listdir(f"{startdir}/Topics/Calendar/Months"):
+                os.chdir(f"{startdir}/Topics/Calendar/Months/{month}")
+                for day in os.listdir(f"{startdir}/Topics/Calendar/Months/{month}"):
+                    os.chdir(f"{startdir}/Topics/Calendar/Months/{month}/{day}")
+                    tasklist = os.listdir(f"{startdir}/Topics/Calendar/Months/{month}/{day}")             
                     delpath = os.getcwd()
                     for task in tasklist:
                         if todel in task:
-                            os.remove(f"C:/DEV/Projects/Topics/Calendar/Months/{month}/{day}/{task}")
+                            os.remove(f"{startdir}/Topics/Calendar/Months/{month}/{day}/{task}")
 
     except(FileNotFoundError,UnboundLocalError) as e: #add thing for win5 error
         print(e)
@@ -107,37 +109,37 @@ def CreateNew():
         CreateTask()
 
 def CreateTopic():
-    TopicName = input("What should be the name of the topic? ")
-    os.chdir("C:/DEV/Projects/Topics")
-    os.mkdir(f"{TopicName}")
+    TopicName = input("What should be the name of the topic? ").strip()
+    os.chdir(f"{startdir}/Topics")
+    os.mkdir(TopicName)
 def CreateProject():
     project_name = input("What is this project\'s name? ").strip(" ")
-    to_complete_by = input("When should this project be completed by: ")
-    time_to_complete = input("How much time will you consistently put into this each week: ")
+    to_complete_by = input("When should this project be completed by?  ")
+    time_to_complete = input("When should it be finished by?  ")
     Project_attr = {}
-    Project_attr.update({"to complete by": to_complete_by, "time to complete": time_to_complete}) #replace with end date and start date
-    os.chdir("C:/DEV/Projects/Topics")
-    ListofTopics = os.listdir("C:/DEV/Projects/Topics")
+    Project_attr.update({"to complete by": to_complete_by, "time to complete": time_to_complete}) 
+    os.chdir(f"{startdir}/Topics")
+    ListofTopics = os.listdir(f"{startdir}/Topics")
     print(filter(lambda x: x != "Calendar",ListofTopics))
-    TopicUnder = input("What topic is this project under? ").strip(" ")
-    os.chdir(""f"C:/DEV/Projects/Topics/{TopicUnder}""")
-    os.mkdir(f"{project_name}")
-    os.chdir(f"C:/DEV/Projects/Topics/{TopicUnder}/{project_name}")
+    TopicUnder = input("What topic should this project be under? ").strip(" ")
+    os.chdir(""f"{startdir}/Topics/{TopicUnder}""")
+    os.mkdir(project_name)
+    os.chdir(f"{startdir}/Topics/{TopicUnder}/{project_name}")
     # to determine subproject switches may have to happen between months sometimes
     # make text file that contains info about project
-    os.chdir(""f"C:/DEV/Projects/Topics/{TopicUnder}/{project_name}""")
+    os.chdir(""f"{startdir}/Topics/{TopicUnder}/{project_name}""")
     with open(f"{project_name} Description", "a+") as project_description:
         project_description.write(str(Project_attr))
 def CreatesubProject():
-    objname = input("Enter name: ")
-    fortheweek = input("Will the subproject continue for the week?(y/n)").strip(" ")
+    objname = input("Enter name: ").strip()
+    fortheweek = input("Will the subproject continue for the week(7 days from whatever day is now)?(y/n)").strip(" ")
     if fortheweek == 'y':
         topic_under = input("What topic is it under? ").strip(" ")
         project_under = input("Enter Project under:  ").strip(" ")
         start_date = datetime(today.year,today.month,today.day)
         end_date = start_date + timedelta(days = 7)
         obj = subProjects(objname,topic_under, project_under,str(start_date),str(end_date))
-        os.chdir(f"C:/DEV/Projects/Topics/{topic_under}/{project_under}")
+        os.chdir(f"{startdir}/Topics/{topic_under}/{project_under}")
         makejsonfile(objname,obj)
 
     if fortheweek == 'n':
@@ -148,25 +150,25 @@ def CreatesubProject():
         topic_under = input("Topic under ").strip(" ")
         project_under = input("Enter Project under:  ")
         obj = subProjects(objname,topic_under, project_under,start_date,end_date)
-        os.chdir(f"C:/DEV/Projects/Topics/{topic_under}/{project_under}")
+        os.chdir(f"{startdir}/Topics/{topic_under}/{project_under}")
         makejsonfile(objname,obj)
 
 def CreateTask():
     objname = input("Enter name of Task: ")
     month_number = today.month #maybe change this later...
-    day_number = int(input('What day should this task be done on(please give number)'))
+    day_number = int(input('What day should this task be done on(please input number)'))
     duration = list(map(int,input("How long do you want to spend on this(hr min): ").split(" ")))
-    topic_under = input("What topic is this task under")
-    project_under = input("What project is this task under?")
+    topic_under = input("What topic should this task under? ")
+    project_under = input("What project should this task under? ")
     is_there_subproject_under = input("Is there is subproject(y/n)").strip(" ")
     if  is_there_subproject_under == 'y':
         subproject_under = input("what subproject is it under: ")
         obj = Tasks(objname,topic_under,project_under,month_number,day_number,duration,subproject_under)
-        os.chdir(f"C:/DEV/Projects/Topics/Calendar/Months/{month_number}/{day_number}")
+        os.chdir(f"{startdir}/Topics/Calendar/Months/{month_number}/{day_number}")
         makejsonfile(objname, obj)
     else:
         obj = Tasks(objname,topic_under,project_under,month_number,day_number,duration)
-        os.chdir(f"C:/DEV/Projects/Topics/Calendar/Months/{month_number}/{day_number}")
+        os.chdir(f"{startdir}/Topics/Calendar/Months/{month_number}/{day_number}")
         makejsonfile(objname, obj)
 
 # obj.__setattr__("name","Beem")use this instead to change attributes
