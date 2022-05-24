@@ -7,7 +7,7 @@ from main import find_config
 import blocker
 #change parameters
 '''times hours spent on certain tasks and can be paused. Also should delete tasks that have been finished.'''
-def countdown(taskpath,blocked_websites,hour,min=59,sec = 59):#reads attribute and calls the a func from block web file for specific task
+def countdown(task,taskpath,blocked_websites,hour,min=59,sec = 59):#reads attribute and calls the a func from block web file for specific task
     '''prints amount of time left and updates every second'''
     blocker.block(blocked_websites)
     print("press control -C to pause timer")
@@ -26,7 +26,7 @@ def countdown(taskpath,blocked_websites,hour,min=59,sec = 59):#reads attribute a
                     sys.stdout.write("\r")
                     sys.stdout.write(f"{hr}:{minutes}:{seconds} ")
                     sys.stdout.flush()
-                    time.sleep(1) #for now
+                    #time.sleep(1)
                 sec = 59
             min = 59
         sys.stdout.write("\r:)\n")
@@ -34,7 +34,7 @@ def countdown(taskpath,blocked_websites,hour,min=59,sec = 59):#reads attribute a
         Pause(taskpath,hr,minutes,seconds)
         print("Paused. type start command again")
     else:
-        delmakeobj.delete(find_config("start_directory"),"Task",taskname)
+        delmakeobj.delete(find_config("start_directory"),"Task",task)
 def Pause(taskpath,hr,minutes,seconds):#should clear host file
     '''lets the timer start from where it left off by modifying json attribute: duration'''
     blocker.clear()

@@ -31,13 +31,13 @@ def startwork(startdir):#change this so that tasks from any day(in same month) c
     blocked_websites = attr["blocked_websites"]
     if len(attr['duration']) == 1:
         hour = attr['duration'][0]
-        countdown(taskpath,blocked_websites,hour) #take blocked websites as well
+        countdown(task,taskpath,blocked_websites,hour) #take blocked websites as well
     elif len(attr['duration']) == 2: #problem due to that
         hour,minutes = attr['duration']
-        countdown(taskpath,blocked_websites,hour,minutes)
+        countdown(task,taskpath,blocked_websites,hour,minutes)
     elif len(attr['duration'])== 3:
         hour,minutes,seconds =  attr['duration']
-        countdown(taskpath,blocked_websites,hour,minutes,seconds)
+        countdown(task,taskpath,blocked_websites,hour,minutes,seconds)
 
 def new(startdir):
     delmakeobj.CreateNew(startdir)

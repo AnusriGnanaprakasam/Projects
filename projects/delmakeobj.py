@@ -128,7 +128,7 @@ def CreateProject(startdir):
     project_name = input("What is this project\'s name? ").strip(" ")
     to_complete_by = input("When should this project be completed by?  ")
     time_to_complete = input("How long should be spent on it each day?  ")
-    blocked_websites = input("What websites should be unavailable when completing tasks?(in format \"www.website.com\" with a comma between each) ").split(",")
+    blocked_websites = input("(can be blank) What websites should be unavailable when completing tasks?(in format \"www.website.com\" with a comma between each) ").split(",")
     Project_attr = {"to complete by": to_complete_by,"time to complete": time_to_complete,"blocked_websites":blocked_websites}
     os.chdir(f"{startdir}/Topics")
     ListofTopics = os.listdir(f"{startdir}/Topics")
@@ -169,7 +169,7 @@ def CreateTask(startdir):
     duration = list(map(int,input("How long do you want to spend on this(hr min)?  ").split(" ")))
     topic_under = input("What topic should this task be under? ")
     project_under = input("What project should this task be under? ")
-    blocked_websites = input("What websites should be unavailable when completing this specific task (will inherit websites from project task is under)? \n In format \"www.website.com\" with a comma between each)  ").split(",")
+    blocked_websites = input("(can be blank) What websites should be unavailable when completing this specific task (will inherit websites from project task is under)? \n In format \"www.website.com\" with a comma between each)  ").split(",")
     
     is_there_subproject_under = input("Is there is subproject(y/n)? ").strip(" ")
     if  is_there_subproject_under == 'y':
