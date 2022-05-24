@@ -26,7 +26,7 @@ def countdown(task,taskpath,blocked_websites,hour,min=59,sec = 59):#reads attrib
                     sys.stdout.write("\r")
                     sys.stdout.write(f"{hr}:{minutes}:{seconds} ")
                     sys.stdout.flush()
-                    #time.sleep(1)
+                    time.sleep(1)
                 sec = 59
             min = 59
         sys.stdout.write("\r:)\n")
