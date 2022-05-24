@@ -1,12 +1,16 @@
 import time
 import sys
+import os
 import json
-import projects.delmakeobj as delmakeobj
+import delmakeobj
+from main import find_config
+import blocker
+#change parameters
 '''times hours spent on certain tasks and can be paused. Also should delete tasks that have been finished.'''
-def countdown(task,hour,min=59,sec = 59):#reads attribute and calls the a func from block web file for specific task
-    '''prints amount of time left 
-    and updates every second'''
-    print("press control -c to stop timer")
+def countdown(taskpath,blocked_websites,hour,min=59,sec = 59):#reads attribute and calls the a func from block web file for specific task
+    '''prints amount of time left and updates every second'''
+    blocker.block(blocked_websites)
+    print("press control -C to pause timer")
     if min == 59:
        hour -= 1
     if sec == 59 and min != 59:
@@ -27,13 +31,15 @@ def countdown(task,hour,min=59,sec = 59):#reads attribute and calls the a func f
             min = 59
         sys.stdout.write("\r:)\n")
     except KeyboardInterrupt:
-        Pause(task,hr,minutes,seconds)
+        Pause(taskpath,hr,minutes,seconds)
         print("Paused. type start command again")
-    delmakeobj.delete("Task",task)
-def Pause(objname,hr,minutes,seconds):
+    else:
+        delmakeobj.delete(find_config("start_directory"),"Task",taskname)
+def Pause(taskpath,hr,minutes,seconds):#should clear host file
     '''lets the timer start from where it left off by modifying json attribute: duration'''
-    if ".json" in objname:
-        with open(f"{objname}",'r+') as objfile:
+    blocker.clear()
+    if ".json" in taskpath:
+        with open(f"{taskpath}",'r+') as objfile:
             attr = json.load(objfile)
             if str(0) in str(minutes):
                 minutes = minutes[1]
