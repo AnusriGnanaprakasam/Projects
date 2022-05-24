@@ -79,33 +79,40 @@ def find_config(attribute):
 def BuildCalendar():
     '''makes calendar folder which will have tasks populated into it'''
     startdir= input("What directory do you want to install the calendar in?").strip()
-    #if error, del prev calander and replace with new one
-    os.chdir(startdir)
-    os.makedirs("Topics/Calendar/Months")#error start here
-    leapYearStatus = calendar.isleap(today.year)
-    feb = 30 if leapYearStatus == True else 29
-    monthswith31days = [1, 3, 5, 7, 8, 10, 12]
-    monthswith30days = [4, 6, 9, 11]
-    """build the calendar"""
-    for month in range(1, 13):
-        os.chdir(f"{startdir}/Topics/Calendar/Months")
-        os.mkdir(str(month))
-        os.chdir(f"{startdir}/Topics/Calendar/Months/{month}")
-        if month in monthswith31days:  # check if leap year for feb
-            for day in range(1, 32):
-                os.mkdir(str(day))
-        os.chdir(f"{startdir}/Topics/Calendar/Months")
-        if month in monthswith30days:
+    try:
+        #if error, del prev calander and replace with new one
+        os.chdir(startdir) #dir not found and file not empty
+        os.makedirs("Topics/Calendar/Months")
+    except (FileNotFoundError,FileExistsError) as e:
+        print(e)
+        print("you should most likely input another directory(or create if file not found error)")
+        BuildCalendar()
+
+    else:
+        leapYearStatus = calendar.isleap(today.year)
+        feb = 30 if leapYearStatus == True else 29
+        monthswith31days = [1, 3, 5, 7, 8, 10, 12]
+        monthswith30days = [4, 6, 9, 11]
+        """build the calendar"""
+        for month in range(1, 13):
+            os.chdir(f"{startdir}/Topics/Calendar/Months")
+            os.mkdir(str(month))
             os.chdir(f"{startdir}/Topics/Calendar/Months/{month}")
-            for day in range(1, 31):
-                os.mkdir(str(day))
-        os.chdir(f"{startdir}/Topics/Calendar/Months")
-        if month == 2:
-            os.chdir(f"{startdir}/Topics/Calendar/Months/{month}")
-            for day in range(1, feb):
-                os.mkdir(str(day))
-        os.chdir(f"{startdir}/Topics/Calendar/Months")
-    modify_config("start_directory",startdir)
+            if month in monthswith31days:  # check if leap year for feb
+                for day in range(1, 32):
+                    os.mkdir(str(day))
+            os.chdir(f"{startdir}/Topics/Calendar/Months")
+            if month in monthswith30days:
+                os.chdir(f"{startdir}/Topics/Calendar/Months/{month}")
+                for day in range(1, 31):
+                    os.mkdir(str(day))
+            os.chdir(f"{startdir}/Topics/Calendar/Months")
+            if month == 2:
+                os.chdir(f"{startdir}/Topics/Calendar/Months/{month}")
+                for day in range(1, feb):
+                    os.mkdir(str(day))
+            os.chdir(f"{startdir}/Topics/Calendar/Months")
+        modify_config("start_directory",startdir)
 
 
 def welcome_message():
@@ -117,7 +124,3 @@ def make_config(): #make the actual file
         start = {"year":today.year-1}
         json.dump(start,config)
  
-
- 
-if __name__ == "__main__":
-    main()
