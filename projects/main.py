@@ -124,7 +124,3 @@ def make_config(): #make the actual file
         start = {"year":today.year-1}
         json.dump(start,config)
  
-
- 
-if __name__ == "__main__":
-    main()
