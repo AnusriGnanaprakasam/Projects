@@ -1,13 +1,24 @@
 import time
 import sys
 import json
-import delmakeobj
-from main import find_config
-import blocker
-#change parameters
-'''times hours spent on certain tasks and can be paused. Also should delete tasks that have been finished.'''
+from pathlib import Path
+from lifemanager import delmakeobj
+from lifemanager import blocker
+
+def find_config(attribute): #have main import from here?
+    try:
+        directory = Path(__file__).parent/"config.json" 
+        with open(directory,'r+') as config:
+            configdict = json.load(config)
+            return configdict[attribute]
+    except FileNotFoundError:
+        return("file does not exit ")
+    except Exception as e:
+        print("e")
+        
+
 def countdown(task,taskpath,blocked_websites,hour,min=59,sec = 59):#reads attribute and calls the a func from block web file for specific task
-    '''prints amount of time left and updates every second'''
+    '''prints amount of time left and updates every second. Task deleted when done'''
     blocker.block(blocked_websites)
     print("press control -C to pause timer")
     if min == 59:
@@ -34,7 +45,8 @@ def countdown(task,taskpath,blocked_websites,hour,min=59,sec = 59):#reads attrib
         print("Paused. type start command again")
     else:
         delmakeobj.delete(find_config("start_directory"),"Task",task)
-def Pause(taskpath,hr,minutes,seconds):#should clear host file
+        
+def Pause(taskpath,hr,minutes,seconds):
     '''lets the timer start from where it left off by modifying json attribute: duration'''
     blocker.clear()
     if ".json" in taskpath:
