@@ -1,6 +1,7 @@
 import os
 import json
 import calendar
+import argparse
 from datetime import date
 from pathlib import Path
 from rich.tree import Tree
@@ -30,11 +31,13 @@ def welcome_message():
     print(ListOfCommands)
 
 def make_config():
+    '''config file made here when first installed'''
     with open(directory,'w',encoding="utf-8") as config:
         start = {"year":today.year-1}
         json.dump(start,config)
 
 def modify_config(attribute,value):
+    '''modify config file attributes'''
     with open(directory,'r+',encoding="utf-8") as config:
         configdict = json.load(config)
         if attribute not in configdict.keys():
@@ -59,59 +62,93 @@ def find_config(attribute):
         return("config file not found. You probably deleted it by accident")      
     except Exception as e:
         print(e,"Send this to me if you are confused") 
-        print("Config file most likely only contains year and not start directory because \n the question of where to install was skipped or not properly answered. Please enter path to a empty folder that exists.")
-        BuildCalendar()
+        print("Config file most likely only contains year and not start directory because \n the question of where to install was skipped or not properly answered.  Please enter an empty folder that exists.")
+        MakeCalendarDir()
 
-def BuildCalendar():
+def BuildCalendar(startdir):
+    leapYearStatus = calendar.isleap(today.year)
+    feb = 30 if leapYearStatus == True else 29
+    monthswith31days = [1, 3, 5, 7, 8, 10, 12]
+    monthswith30days = [4, 6, 9, 11]
+    for month in range(1, 13):
+        os.chdir(f"{startdir}\\Topics\\Calendar\\Months")
+        os.mkdir(str(month))
+        os.chdir(f"{startdir}\\Topics\\Calendar\\Months\\{month}")
+        if month in monthswith31days:  # check if leap year for feb
+            for day in range(1, 32):
+                os.mkdir(str(day))
+        os.chdir(f"{startdir}\\Topics\\Calendar\\Months")
+        if month in monthswith30days:
+            os.chdir(f"{startdir}\\Topics\\Calendar\\Months\\{month}")
+            for day in range(1, 31):
+                os.mkdir(str(day))
+        os.chdir(f"{startdir}\\Topics\\Calendar\\Months")
+        if month == 2:
+            os.chdir(f"{startdir}\\Topics\\Calendar\\Months\\{month}")
+            for day in range(1, feb):
+                os.mkdir(str(day))
+        os.chdir(f"{startdir}\\Topics\\Calendar\\Months")
+    modify_config("start_directory",startdir)
+
+def MakeCalendarDir():
     '''makes calendar folder which will have tasks populated into it'''
-    startdir= input("What directory do you want to install the calendar in?").strip()
+    startdir= input("What directory do you want to install the calendar in(give nonsense input if wanting to make dir)?").strip()
     try:
         os.chdir(startdir)
         os.makedirs("Topics\\Calendar\\Months")
-    except (FileNotFoundError,FileExistsError) as e:
+    except FileNotFoundError as e:
         print(e)
-        print(" input another directory that is empty(or create if file not found error)")
-        BuildCalendar()
+        make_folder= input("What directory do you want to make the folder in? ")
+        #make it so that you can copy and paste path
+        folder_name = input("Name the folder. ")
+        start_name = "\\"+ folder_name
+        os.chdir(make_folder)
+        os.makedirs(folder_name+"\\Topics\\Calendar\\Months")#dont put \\ in front of makedirs
+        startdir = make_folder+start_name
+        print(startdir)
+        BuildCalendar(startdir)
+    except FileExistsError as e:
+        print(e)
+        print(" input another directory that is empty")
+        MakeCalendarDir()
 
-    else:
-        leapYearStatus = calendar.isleap(today.year)
-        feb = 30 if leapYearStatus == True else 29
-        monthswith31days = [1, 3, 5, 7, 8, 10, 12]
-        monthswith30days = [4, 6, 9, 11]
-        """build the calendar"""
-        for month in range(1, 13):
-            os.chdir(f"{startdir}\\Topics\\Calendar\\Months")
-            os.mkdir(str(month))
-            os.chdir(f"{startdir}\\Topics\\Calendar\\Months\\{month}")
-            if month in monthswith31days:  # check if leap year for feb
-                for day in range(1, 32):
-                    os.mkdir(str(day))
-            os.chdir(f"{startdir}\\Topics\\Calendar\\Months")
-            if month in monthswith30days:
-                os.chdir(f"{startdir}\\Topics\\Calendar\\Months\\{month}")
-                for day in range(1, 31):
-                    os.mkdir(str(day))
-            os.chdir(f"{startdir}\\Topics\\Calendar\\Months")
-            if month == 2:
-                os.chdir(f"{startdir}\\Topics\\Calendar\\Months\\{month}")
-                for day in range(1, feb):
-                    os.mkdir(str(day))
-            os.chdir(f"{startdir}\\Topics\\Calendar\\Months")
-        modify_config("start_directory",startdir)
-           
+def argumentparser():
+    '''where argparse parses arguments for cli'''
+    parser = argparse.ArgumentParser()
+    parser.add_argument('do', type=str,action="store", help='Provides name')
+    args = parser.parse_args()  
+    return args.do
 def main():
     ''' entry point for the program(this should be executed when just life-manager is given without args)'''
-    welcome_message()
-    if find_config("start_directory") == "not found":
+    welcome_message() 
+    if find_config("start_directory") == "config file not found. You probably deleted it by accident": #sees if package is already installed
         make_config()
         with open(directory, "r+",encoding="utf-8") as config:
-            year_yesterday= json.load(config)
-            year_yesterday = year_yesterday["year"]#careful of quotes
+            config_content= json.load(config)
+            year_yesterday = config_content["year"]#careful of quotes
             if today.year != int(year_yesterday):
                 modify_config("year",today.year)
                 BuildCalendar()
+                sys.exit() #why should i use sys.exit(): https://pythonguides.com/python-exit-command/
+    do = argumentparser()
+    if do == "no":#0
+        print('bye')
+    if do == "startwork":
+        startwork()
+    if do == "new":#1
+        new()
+    if do == "delete":
+        delete()
+    if do == "lookattasks":
+        LookAtTasks()
+    if do == "lookatprojects":
+        LookAtProjects()
+    if do == "lookatsubprojects":
+        LookAtsubProjects()
+    
 
 def startwork():#change this so that tasks from any day(in same month) can be done
+    '''to start timing tasks'''
     startdir = find_config("start_directory")
     for_today = input("Is the task scheduled for today?(y/n)").strip(" ")
     if for_today == 'y':
@@ -138,17 +175,19 @@ def startwork():#change this so that tasks from any day(in same month) can be do
         hour,minutes,seconds =  attr['duration']
         timer.countdown(task,taskpath,blocked_websites,hour,minutes,seconds)
 
-def new(startdir):
+def new():
+    '''make a new object'''
     startdir = find_config("start_directory")
     delmakeobj.CreateNew(startdir)
 
-def delete(startdir):
+def delete():
+    '''delete object'''
     startdir = find_config("start_directory")
     u = input('Deltype and what to delete?(separate by comma)').split(",")
     deltype,todel = u
     delmakeobj.delete(startdir,deltype,todel)
 
-def LookAtProjects(startdir):#make it so that attrs can be changed
+def LookAtProjects():#make it so that attrs can be changed
     startdir = find_config("start_directory")
     topic = input("What Topic is it?" )#is it in
     location = f"{startdir}\\Topics\\{topic}"
@@ -161,7 +200,7 @@ def LookAtProjects(startdir):#make it so that attrs can be changed
     objpath = f"{location}\\{project}\\{project} Description"
     print(LookAtAttr(project+" Description",objpath))
 
-def LookAtsubProjects(startdir): #make it so that they can be changed
+def LookAtsubProjects(): #make it so that they can be changed
     startdir = find_config("start_directory")
     project,topic = input("What Project and Topic do you want to look at(project,topic)?" ).split(",")
     location = f"{startdir}\\Topics\\{topic}\\{project}"
@@ -176,7 +215,7 @@ def LookAtsubProjects(startdir): #make it so that they can be changed
             objpath = f"{startdir}\\Topics\\{topic}\\{project}\\{subproject}"
             print(LookAtAttr(subproject,objpath))
 
-def LookAtTasks(startdir):#make it so that attrs can be changed
+def LookAtTasks():#make it so that attrs can be changed
     startdir = find_config("start_directory") #optimize later
     fortoday = input("For today(y/n)? ").strip(" ")
     if fortoday == "y":
@@ -185,7 +224,7 @@ def LookAtTasks(startdir):#make it so that attrs can be changed
         tasklist = os.listdir(f"{startdir}\\Topics\\Calendar\\Months\\{month}\\{day}")
         print(tasklist)
         if len(tasklist) == 0:
-           exit()
+           sys.exit()
            
     if fortoday == "n":
         lookdaymonth = input("From what day and month?(format: \"d m\") ").split(" ")
@@ -193,7 +232,7 @@ def LookAtTasks(startdir):#make it so that attrs can be changed
         os.chdir(f"{startdir}\\Topics\\Calendar\\Months\\{month}\\{day}")
         print(os.listdir(f"{startdir}\\Topics\\Calendar\\Months\\{month}\\{day}"))
         if len(tasklist) == 0:
-           exit()
+           sys.exit()
 
     get_attr = input("Would you like to get details on any of the tasks?(y/n) ")
     if get_attr.strip(" ") == "y":    
@@ -202,7 +241,7 @@ def LookAtTasks(startdir):#make it so that attrs can be changed
         objpath = f"{startdir}\\Topics\\Calendar\\Months\\{month}\\{day}\\{Taskname}"
         print(LookAtAttr(Taskname,objpath))
     else:
-        exit()
+        sys.exit()
         
 def LookAtAttr(objname,objpath):#working on
     if ".json" in objname: #has json in it righttttttt

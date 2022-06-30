@@ -3,10 +3,11 @@ import json
 from datetime import datetime,date,timedelta
 from shutil import rmtree
 
+'''Objects made here'''
 today = date.today()
 
 class subProjects():
-    def __init__(self,objname,topic_under,project_under,start_date,end_date):
+    def __init__(self,objname,topic_under,project_under,start_date,end_date):#group info into objects
         self.start_date = start_date
         self.end_date = end_date
         self.topic_under = topic_under
@@ -33,11 +34,11 @@ class Tasks():
         description = f"name: {self.objname}  \n project: {self.project_under} \n subproject: {self.subproject_under}"
         return description
 
+'''Making and deleting objects'''
 
-
-def delete(startdir,type,todel):#make it so that spaces can be taken
+def delete(startdir,kind,todel):#make it so that spaces can be taken
     try:
-        if "topic" == type.lower() : #be careful with "or"
+        if "topic" == kind.lower() : #be careful with "or"
             print('tf')
             os.chdir(f"{startdir}\\Topics\\{todel}")
             warning = input("Warning this will delete all project,subprojects and tasks within the directory. \n Type \"confirm\" to continue ").strip(" ")
@@ -46,14 +47,14 @@ def delete(startdir,type,todel):#make it so that spaces can be taken
             else:
                 os.chdir(f"{startdir}\\Topics")
                 os.removedirs(f"{startdir}\\Topics\\{todel}")
-        if "project" == type.lower():
+        if "project" == kind.lower():
             os.chdir(f"{startdir}\\Topics")
             for topic in os.listdir():
                 os.chdir(f"{startdir}\\Topics\\{topic}")
             for project in os.listdir():
                 if project == todel:
                     rmtree(f"{startdir}\\Topics\\{topic}\\{todel}")
-        if "subproject" == type.lower(): 
+        if "subproject" == kind.lower(): 
             os.chdir(f"{startdir}\\Topics")
             for topic in os.listdir():
                 os.chdir(f"{startdir}\\Topics\\{topic}")
@@ -62,7 +63,7 @@ def delete(startdir,type,todel):#make it so that spaces can be taken
                 for subproject in os.listdir():
                     if todel in subproject:
                         os.remove(f"{startdir}\\Topics\\{topic}\\{project}\\{subproject}")
-        if "task" ==  type.lower():
+        if "task" ==  kind.lower():
             os.chdir(f"{startdir}\\Topics\\Calendar\\Months")
             for month in os.listdir(f"{startdir}\\Topics\\Calendar\\Months"):
                 os.chdir(f"{startdir}\\Topics\\Calendar\\Months\\{month}")
@@ -75,11 +76,8 @@ def delete(startdir,type,todel):#make it so that spaces can be taken
 
     except(FileNotFoundError,UnboundLocalError) as e: #add thing for win5 error
         print(e)
-        print(f"There is no {type} under the name \"{todel}\"")
-        print("Make?")
+        print(f"There is no {kind} under the name \"{todel}\" \n Make?")
       
-    
-
 class ObjectEncoder(json.JSONEncoder):
     '''Json encoder class for projects'''
 
@@ -98,14 +96,15 @@ def makejsonfile(objname, obj):
 
 def LookAtAttr(objname): #need to sort everything out pls helps
     if ".json" in objname:
-        with open(f"{objname}",'r+') as objfile:
+        with open(f"{objname}",'r+',encoding='utf-8') as objfile:
             attr = json.load(objfile)
             return attr
     else:
-        with open(f"{objname}",'r+') as objfile:
+        with open(f"{objname}",'r+',encoding='utf-8') as objfile:
             print(objfile.read())
 
-def CreateNew(startdir):#startdir argument
+def CreateNew(startdir):#pass more arguments for new instead of this*worry about this after commiting and sending*
+    '''calls functions that make specified obj'''
     typeof = input("Do you want to make a new Task, subProject, Project or Topic?").strip(" ")
     if typeof.lower() == "task":
         CreateTask(startdir)
@@ -115,14 +114,13 @@ def CreateNew(startdir):#startdir argument
         CreatesubProject(startdir)
     if typeof.lower() == "topic":
         CreateTopic(startdir)
-    else:
-        exit()
 
-def CreateTopic(startdir):
+def CreateTopic(startdir): #done
     TopicName = input("What should be the name of the topic? ").strip()
     os.chdir(f"{startdir}\\Topics")
     os.mkdir(TopicName)
-def CreateProject(startdir):
+
+def CreateProject(startdir):#done
     project_name = input("What is this project\'s name? ").strip(" ")
     to_complete_by = input("When should this project be completed by?  ")
     time_to_complete = input("How long should be spent on it each day?  ")
@@ -137,17 +135,20 @@ def CreateProject(startdir):
     os.chdir(f"{startdir}\\Topics\\{TopicUnder}\\{project_name}")
     with open(f"{project_name} Description", "a+") as project_description:
         project_description.write(str(Project_attr))
+
 def CreatesubProject(startdir): 
     objname = input("Enter name of subProject: ").strip()
     fortheweek = input("Will the subproject continue for the week(7 days from whatever day is now)?(y\\n)").strip(" ")
     if fortheweek == 'y':
         topic_under = input("What topic is it under? ").strip(" ")
+        ListofProjects = os.listdir(f"{startdir}\\Topics\\{topic_under}")
+        print(ListofProjects)
         project_under = input("What project is it under?  ").strip(" ")
         start_date = datetime(today.year,today.month,today.day)
         end_date = start_date + timedelta(days = 7)
         obj = subProjects(objname,topic_under, project_under,str(start_date),str(end_date))
         os.chdir(f"{startdir}\\Topics\\{topic_under}\\{project_under}")
-        makejsonfile(objname,obj)
+        makejsonfile(objname,obj) 
 
     if fortheweek == 'n':
         monthstart,daystart = list(map(int,input("When to start(m d): ").split(" ")))
@@ -155,6 +156,8 @@ def CreatesubProject(startdir):
         start_date = datetime(today.year,monthstart,daystart)
         end_date = datetime(today.year,monthend,dayend)
         topic_under = input("What topic is it under? ").strip(" ")
+        ListofProjects = os.listdir(f"{startdir}\\Topics\\{topic_under}")
+        print(ListofProjects)
         project_under = input("What project is it under? ")
         obj = subProjects(objname,topic_under, project_under,start_date,end_date)
         os.chdir(f"{startdir}\\Topics\\{topic_under}\\{project_under}")
@@ -166,9 +169,13 @@ def CreateTask(startdir):
     day_number = int(input('What day should this task be done on(please input number)? '))
     duration = list(map(int,input("How long do you want to spend on this(hr min)?  ").split(" ")))
     topic_under = input("What topic should this task be under? ")
+    ListofProjects = os.listdir(f"{startdir}\\Topics\\{topic_under}")
+    print(ListofProjects,"huh")
     project_under = input("What project should this task be under? ")
     blocked_websites = input("(can be blank) What websites should be unavailable when completing this specific task (will inherit websites from project task is under)? \n In format \"www.website.com\" with a comma between each)  ").split(",")
-    
+    ListofsubProjects = os.listdir(f"{startdir}\\Topics\\{topic_under}\\{project_under}")
+    print(ListofsubProjects)
+
     is_there_subproject_under = input("Is there is subproject(y\\n)? ").strip(" ")
     if  is_there_subproject_under == 'y':
         subproject_under = input("What subproject is it under? ")
