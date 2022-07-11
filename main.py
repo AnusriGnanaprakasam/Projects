@@ -2,13 +2,14 @@ import os
 import json
 import calendar
 import argparse
+import sys
 from datetime import date
 from pathlib import Path
 from rich.tree import Tree
 from rich import print
-from lifemanager import timer
-from lifemanager import delmakeobj 
 from pyfiglet import figlet_format
+from lifemanager import timer
+from lifemanager import delmakeobj
 
 #startdir in all func.  IS THIS A PROBLEM??
 #have command with arguments (use argparse to implement this)
@@ -17,8 +18,9 @@ ListOfCommands = """
     - new
     - delete
     - lookatprojects 
-    - lookatsubprojects - .json not apart of input
-    - lookattasks - .json not apart of input
+    - lookatsubprojects 
+    - lookattasks 
+    
     """
 
 directory = Path(__file__).parent/"config.json"  #define where config file is located
@@ -28,7 +30,7 @@ def welcome_message():
     ''' displayed when LifeManager command is typed without any arguments'''
     welcome_message = figlet_format("Life Manager",font="slant",width=70)
     print(welcome_message)
-    print(ListOfCommands)
+    
 
 def make_config():
     '''config file made here when first installed'''
@@ -115,7 +117,7 @@ def MakeCalendarDir():
 def argumentparser():
     '''where argparse parses arguments for cli'''
     parser = argparse.ArgumentParser()
-    parser.add_argument('do', type=str,action="store", help='Provides name')
+    parser.add_argument('do', type=str,action="store", help=ListOfCommands)
     args = parser.parse_args()  
     return args.do
 def main():
@@ -128,12 +130,12 @@ def main():
             year_yesterday = config_content["year"]#careful of quotes
             if today.year != int(year_yesterday):
                 modify_config("year",today.year)
-                BuildCalendar()
+                MakeCalendarDir()
                 sys.exit() #why should i use sys.exit(): https://pythonguides.com/python-exit-command/
     do = argumentparser()
     if do == "no":#0
         print('bye')
-    if do == "startwork":
+    if do == "startwork":#2
         startwork()
     if do == "new":#1
         new()

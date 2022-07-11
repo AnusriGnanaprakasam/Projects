@@ -174,7 +174,7 @@ def CreateTask(startdir):
     project_under = input("What project should this task be under? ")
     blocked_websites = input("(can be blank) What websites should be unavailable when completing this specific task (will inherit websites from project task is under)? \n In format \"www.website.com\" with a comma between each)  ").split(",")
     ListofsubProjects = os.listdir(f"{startdir}\\Topics\\{topic_under}\\{project_under}")
-    print(ListofsubProjects)
+    print(list(filter(lambda x:  "Description" not in x,ListofsubProjects)))
 
     is_there_subproject_under = input("Is there is subproject(y\\n)? ").strip(" ")
     if  is_there_subproject_under == 'y':
